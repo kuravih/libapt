@@ -190,11 +190,11 @@ const std::vector<char> aptserial::SerialPort::Read() {
   // This will work because we do not delete/resize the vector while this method is called
   m_readBuffer.resize(APT_SERIAL_DEFAULT_BUFFER_SIZE);
   ssize_t num = read(m_fileDescriptor, &m_readBuffer[0], m_readBuffer.size());
-  m_readBuffer.resize(num);
-
   // Error Handling
   if(num < 0) // Read was unsuccessful
     throw SerialPortException("aptdevice.cpp", "Read()", "No bytes read.");
+  else 
+    m_readBuffer.resize(num);
 
   return m_readBuffer;
 }
@@ -690,11 +690,6 @@ aptserial::KPZ101::KPZ101(const std::string _deviceFileName, const uint8_t _idSr
   // updatePositionControlMode();
   // updateOutputVoltage();
   // updateChannelEnableState();
-}
-
-
-aptserial::KPZ101::~KPZ101() {
-  
 }
 
 

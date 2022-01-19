@@ -319,7 +319,7 @@ namespace aptserial {
     PZ_STATE m_state;
   public:
     KPZ101(const std::string _deviceFileName, const uint8_t _idSrcDest);
-    ~KPZ101();
+    ~KPZ101() = default;
     KPZ101( const KPZ101& ) = delete; // disallows copy construction: KPZ101 a = b
     KPZ101& operator= ( const KPZ101& ) = delete; // disallows copy assignment: a = b;
     void identifyDevice() {
