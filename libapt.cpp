@@ -427,7 +427,6 @@ void aptserial::APTDevice::getDisplaySettings(uint16_t& _brightness_adu) {
 }
 
 
-
 void aptserial::APTDevice::setChannelEnableState(const APT_STATE _state, const APT_CHANNEL _channelId) {
   Write(APT_MGMSG_MOD_SET_CHANENABLESTATE, m_idSrcDest, (uint8_t)_channelId, (uint8_t)_state);
 }
