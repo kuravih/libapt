@@ -62,12 +62,6 @@ enum class PZ_POSITION_CONTROL_MODE : uint8_t {
 
 namespace aptserial {
   // ==================================================================================================================
-  const std::string channelToString(const PZ_CHANNEL _channel);
-  const bool stringToChannel(const std::string _channelString, PZ_CHANNEL& _channel);
-
-  const std::string stateToString(const PZ_STATE _state);
-  const bool stringToState(const std::string _stateString, PZ_STATE& _state);
-
   const std::string voltageRangeToString(const PZ_VOLTAGE_RANGE _vRange);
   const bool stringToVoltageRange(const std::string _vRangeString, PZ_VOLTAGE_RANGE& _vRange);
 

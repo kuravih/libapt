@@ -479,3 +479,36 @@ void aptserial::APTDevice::getChannelEnableState(APT_STATE& _state, const APT_CH
   }
 }
 // ====================================================================================================================
+const std::string aptserial::channelToString(const APT_CHANNEL _channel) {
+  const char* channelStrings[(uint)APT_CHANNEL::CHANNEL_N_CHANNELS] = APT_CHANNEL_LABELS;
+  return std::string(channelStrings[(uint)_channel]);
+}
+
+
+const bool aptserial::stringToChannel(const std::string _channelString, APT_CHANNEL& _channel) {
+  const char* channelStrings[(uint)APT_CHANNEL::CHANNEL_N_CHANNELS] = APT_CHANNEL_LABELS;
+  auto itChannel = std::find(std::begin(channelStrings), std::end(channelStrings), _channelString);
+  if (itChannel != std::end(channelStrings)) {
+    _channel = (APT_CHANNEL)(uint)std::distance(std::begin(channelStrings), itChannel);
+    return true;
+  }
+  return false;
+}
+
+
+const std::string aptserial::stateToString(const APT_STATE _state) {
+  const char* stateStrings[(uint)APT_STATE::STATE_N_STATES] = APT_STATE_LABELS;
+  return std::string(stateStrings[(uint)_state]);
+}
+
+
+const bool aptserial::stringToState(const std::string _stateString, APT_STATE& _state) {
+  const char* stateStrings[(uint)APT_STATE::STATE_N_STATES] = APT_STATE_LABELS;
+  auto itState = std::find(std::begin(stateStrings), std::end(stateStrings), _stateString);
+  if (itState != std::end(stateStrings)) {
+    _state = (APT_STATE)(uint)std::distance(std::begin(stateStrings), itState);
+    return true;
+  }
+  return false;
+}
+// ====================================================================================================================

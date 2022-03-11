@@ -262,6 +262,12 @@ namespace aptserial {
     void disconnectDevice();
   };
   // ===================================================================================================================
+  const std::string channelToString(const APT_CHANNEL _channel);
+  const bool stringToChannel(const std::string _channelString, APT_CHANNEL& _channel);
+
+  const std::string stateToString(const APT_STATE _state);
+  const bool stringToState(const std::string _stateString, APT_STATE& _state);
+  // ===================================================================================================================
 }
 
 

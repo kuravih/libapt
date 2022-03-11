@@ -3,40 +3,6 @@
 #include <string.h>
 
 // ====================================================================================================================
-const std::string aptserial::channelToString(const PZ_CHANNEL _channel) {
-  const char* channelStrings[(uint)PZ_CHANNEL::CHANNEL_N_CHANNELS] = PZ_CHANNEL_LABELS;
-  return std::string(channelStrings[(uint)_channel]);
-}
-
-
-const bool aptserial::stringToChannel(const std::string _channelString, PZ_CHANNEL& _channel) {
-  const char* channelStrings[(uint)PZ_CHANNEL::CHANNEL_N_CHANNELS] = PZ_CHANNEL_LABELS;
-  auto itChannel = std::find(std::begin(channelStrings), std::end(channelStrings), _channelString);
-  if (itChannel != std::end(channelStrings)) {
-    _channel = (PZ_CHANNEL)(uint)std::distance(std::begin(channelStrings), itChannel);
-    return true;
-  }
-  return false;
-}
-
-
-const std::string aptserial::stateToString(const PZ_STATE _state) {
-  const char* stateStrings[(uint)PZ_STATE::STATE_N_STATES] = PZ_STATE_LABELS;
-  return std::string(stateStrings[(uint)_state]);
-}
-
-
-const bool aptserial::stringToState(const std::string _stateString, PZ_STATE& _state) {
-  const char* stateStrings[(uint)PZ_STATE::STATE_N_STATES] = PZ_STATE_LABELS;
-  auto itState = std::find(std::begin(stateStrings), std::end(stateStrings), _stateString);
-  if (itState != std::end(stateStrings)) {
-    _state = (PZ_STATE)(uint)std::distance(std::begin(stateStrings), itState);
-    return true;
-  }
-  return false;
-}
-
-
 const std::string aptserial::voltageRangeToString(const PZ_VOLTAGE_RANGE _vRange) {
   const char* vRangeStrings[(uint)PZ_VOLTAGE_RANGE::VOLTAGE_RANGE_N_RANGES] = PZ_VOLTAGE_RANGE_LABELS;
   return std::string(vRangeStrings[(uint)_vRange]);
