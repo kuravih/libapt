@@ -1,5 +1,7 @@
 #include "kpz101.h"
 
+#include <string.h>
+
 // ====================================================================================================================
 const std::string aptserial::channelToString(const PZ_CHANNEL _channel) {
   const char* channelStrings[(uint)PZ_CHANNEL::CHANNEL_N_CHANNELS] = PZ_CHANNEL_LABELS;
@@ -108,8 +110,38 @@ aptserial::KPZ101::KPZ101(const std::string _deviceFileName, const uint8_t _idSr
 }
 
 
+void aptserial::KPZ101::setIOSettings(const PZ_VOLTAGE_RANGE _vRange, const PZ_ANALOG_INPUT_SOURCE _analogInput, const APT_CHANNEL _channelId) {
+  stChannelIOSettings channelIOSettings;
+  channelIOSettings.channel = (uint16_t)_channelId;
+  channelIOSettings.voltageRange = (uint16_t)_vRange;
+  channelIOSettings.analogInput = (uint16_t)_analogInput;
+  Write(APT_MGMSG_PZ_SET_TPZ_IOSETTINGS, m_idSrcDest, (char*)&channelIOSettings, sizeof(stChannelIOSettings));
+}
+
+
+void aptserial::KPZ101::getIOSettings(PZ_VOLTAGE_RANGE& _vRange, PZ_ANALOG_INPUT_SOURCE& _analogInput, const APT_CHANNEL _channelId) {
+  std::vector<char> replyData = WriteRead(APT_MGMSG_PZ_REQ_TPZ_IOSETTINGS, APT_MGMSG_PZ_GET_TPZ_IOSETTINGS, m_idSrcDest, sizeof(uHeader)+sizeof(stChannelIOSettings));
+
+  if (replyData.size() == 0)
+    throw SerialPortException("aptdevice.cpp", "getIOSettings()", "Reply not received");
+  else {
+    uHeader readHeader;
+    memcpy(readHeader.raw, replyData.data(), sizeof(uHeader));
+
+    if (readHeader.command.messageId != APT_MGMSG_PZ_GET_TPZ_IOSETTINGS)
+      throw IncorrectHeaderException("aptdevice.cpp", "getIOSettings()");
+
+    stChannelIOSettings channelIOSettings;
+    memcpy(&channelIOSettings, replyData.data()+sizeof(uHeader), sizeof(stChannelIOSettings));
+
+    _vRange = (PZ_VOLTAGE_RANGE)channelIOSettings.voltageRange;
+    _analogInput = (PZ_ANALOG_INPUT_SOURCE)channelIOSettings.analogInput;
+  }
+}
+
+
 void aptserial::KPZ101::setIOSettings(const PZ_VOLTAGE_RANGE _vRange, const PZ_ANALOG_INPUT_SOURCE _analogInputSource) {
-  aptserial::APTDevice::setIOSettings(_vRange, _analogInputSource, m_channelId);
+  setIOSettings(_vRange, _analogInputSource, m_channelId);
   updateIOSettings();
 }
 
@@ -119,46 +151,96 @@ void aptserial::KPZ101::updateIOSettings() {
 }
 
 
+void aptserial::KPZ101::setInputVoltageSource(const PZ_INPUT_VOLTAGE_SOURCE _inputVoltageSource, const APT_CHANNEL _channelId) {
+  stChannelSource channelSource;
+  channelSource.channel = (uint16_t)_channelId;
+  channelSource.source = (uint16_t)_inputVoltageSource;
+  Write(APT_MGMSG_PZ_SET_INPUTVOLTSSRC, m_idSrcDest, (char*)&channelSource, sizeof(stChannelSource));
+}
+
+
+void aptserial::KPZ101::getInputVoltageSource(PZ_INPUT_VOLTAGE_SOURCE& _inputVoltageSource, const APT_CHANNEL _channelId) {
+  std::vector<char> replyData = WriteRead(APT_MGMSG_PZ_REQ_INPUTVOLTSSRC, APT_MGMSG_PZ_GET_INPUTVOLTSSRC, m_idSrcDest, sizeof(uHeader)+sizeof(stChannelSource));
+
+  if (replyData.size() == 0)
+    throw SerialPortException("aptdevice.cpp", "getInputVoltageSource()", "Reply not received");
+  else {
+    uHeader readHeader;
+    memcpy(readHeader.raw, replyData.data(), sizeof(uHeader));
+
+    if (readHeader.command.messageId != APT_MGMSG_PZ_GET_INPUTVOLTSSRC)
+      throw IncorrectHeaderException("aptdevice.cpp", "getInputVoltageSource()");
+
+    stChannelSource channelSource;
+    memcpy(&channelSource, replyData.data()+sizeof(uHeader), sizeof(stChannelSource));
+      
+    _inputVoltageSource = (PZ_INPUT_VOLTAGE_SOURCE)channelSource.source;
+  }
+}
+
+
 void aptserial::KPZ101::setInputVoltageSource(const PZ_INPUT_VOLTAGE_SOURCE _inputVoltageSource) {
-  APTDevice::setInputVoltageSource(_inputVoltageSource, m_channelId);
+  KPZ101::setInputVoltageSource(_inputVoltageSource, m_channelId);
   updateInputVoltageSource();
 }
 
 
 void aptserial::KPZ101::updateInputVoltageSource() {
-  APTDevice::getInputVoltageSource(m_inputVoltageSource, m_channelId);
+  KPZ101::getInputVoltageSource(m_inputVoltageSource, m_channelId);
+}
+
+
+void aptserial::KPZ101::setPositionControlMode(const PZ_POSITION_CONTROL_MODE _positionControlMode, const APT_CHANNEL _channelId) {
+  Write(APT_MGMSG_PZ_SET_POSCONTROLMODE, m_idSrcDest, (uint8_t)_channelId, (uint8_t)_positionControlMode);
+}
+
+
+void aptserial::KPZ101::getPositionControlMode(PZ_POSITION_CONTROL_MODE& _positionControlMode, const APT_CHANNEL _channelId) {
+  std::vector<char> replyData = WriteRead(APT_MGMSG_PZ_REQ_POSCONTROLMODE, APT_MGMSG_PZ_GET_POSCONTROLMODE, m_idSrcDest);
+
+  if (replyData.size() == 0)
+    throw SerialPortException("aptdevice.cpp", "getPositionControlMode()", "Reply not received");
+  else {
+    uHeader readHeader;
+    memcpy(readHeader.raw, replyData.data(), sizeof(uHeader));
+
+    if (readHeader.command.messageId != APT_MGMSG_PZ_GET_POSCONTROLMODE)
+      throw IncorrectHeaderException("aptdevice.cpp", "getPositionControlMode()");
+
+    _positionControlMode = (PZ_POSITION_CONTROL_MODE)readHeader.command.param2;
+  }
 }
 
 
 void aptserial::KPZ101::setPositionControlMode(const PZ_POSITION_CONTROL_MODE _positionControlMode) {
-  APTDevice::setPositionControlMode(_positionControlMode, m_channelId);
+  aptserial::KPZ101::setPositionControlMode(_positionControlMode, m_channelId);
   updatePositionControlMode();
 }
 
 
 void aptserial::KPZ101::updatePositionControlMode() {
-  APTDevice::getPositionControlMode(m_positionControlMode, m_channelId);
+  aptserial::KPZ101::getPositionControlMode(m_positionControlMode, m_channelId);
 }
 
 
 void aptserial::KPZ101::setOutputVoltage(const uint16_t _voltage_adu) {
-  APTDevice::setOutputVoltage(_voltage_adu, m_channelId);
+  aptserial::APTDevice::setOutputVoltage(_voltage_adu, m_channelId);
   updateOutputVoltage();
 }
 
 
 void aptserial::KPZ101::updateOutputVoltage() {
-  APTDevice::getOutputVoltage(m_voltage_adu, m_channelId);
+  aptserial::APTDevice::getOutputVoltage(m_voltage_adu, m_channelId);
 }
 
 
 void aptserial::KPZ101::setChannelEnableState(const PZ_STATE _state) {
-  APTDevice::setChannelEnableState(_state, m_channelId);
+  aptserial::APTDevice::setChannelEnableState(_state, m_channelId);
   updateChannelEnableState();
 }
 
 
 void aptserial::KPZ101::updateChannelEnableState() {
-  APTDevice::getChannelEnableState(m_state, m_channelId);
+  aptserial::APTDevice::getChannelEnableState(m_state, m_channelId);
 }
 // ====================================================================================================================

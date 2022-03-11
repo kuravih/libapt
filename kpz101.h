@@ -11,6 +11,55 @@ typedef APT_CHANNEL PZ_CHANNEL;
 typedef APT_STATE PZ_STATE;
 #define PZ_STATE_LABELS APT_STATE_LABELS
 
+// page 184
+enum class PZ_VOLTAGE_RANGE : uint8_t {
+  VOLTAGE_RANGE_75V = 0x01,
+  VOLTAGE_RANGE_100V,
+  VOLTAGE_RANGE_150V,
+  VOLTAGE_RANGE_N_RANGES
+};
+#define PZ_VOLTAGE_RANGE_LABELS {"VOLTAGE_RANGE_INVALID_0",\
+                                 "VOLTAGE_RANGE_75V",\
+                                 "VOLTAGE_RANGE_100V",\
+                                 "VOLTAGE_RANGE_150V"}
+
+// page 184
+enum class PZ_ANALOG_INPUT_SOURCE : uint8_t {
+  ANALOG_INPUT_SOURCE_A = 0x01,
+  ANALOG_INPUT_SOURCE_B,
+  ANALOG_INPUT_SOURCE_EXTSIG_SMA,
+  ANALOG_INPUT_SOURCE_N_SOURCES
+};
+#define PZ_ANALOG_INPUT_SOURCE_LABELS {"ANALOG_INPUT_SOURCE_INVALID_0",\
+                                       "ANALOG_INPUT_SOURCE_A",\
+                                       "ANALOG_INPUT_SOURCE_B",\
+                                       "ANALOG_INPUT_SOURCE_EXTSIG_SMA"}
+
+// page 160
+enum class PZ_INPUT_VOLTAGE_SOURCE : uint8_t {
+  INPUT_VOLTAGE_SOURCE_SW_ONLY = 0x00,
+  INPUT_VOLTAGE_SOURCE_EXT_SIG = 0x01,
+  INPUT_VOLTAGE_SOURCE_POT = 0x02,
+  INPUT_VOLTAGE_SOURCE_N_SOURCES
+};
+#define PZ_INPUT_VOLTAGE_SOURCE_LABELS {"INPUT_VOLTS_SRC_SW_ONLY",\
+                                        "INPUT_VOLTS_SRC_EXT_SIG",\
+                                        "INPUT_VOLTS_SRC_POT"}
+
+// page 156
+enum class PZ_POSITION_CONTROL_MODE : uint8_t {
+  POSITION_CONTROL_MODE_OPEN_LOOP = 0x01,
+  POSITION_CONTROL_MODE_CLOSED_LOOP,
+  POSITION_CONTROL_MODE_OPEN_LOOP_SMOOTH,
+  POSITION_CONTROL_MODE_CLOSED_LOOP_SMOOTH,
+  POSITION_CONTROL_MODE_N_MODES
+};
+#define PZ_POSITION_CONTROL_MODE_LABELS {"POSITION_CONTROL_MODE_INVALID_0",\
+                                         "POSITION_CONTROL_MODE_OPEN_LOOP",\
+                                         "POSITION_CONTROL_MODE_CLOSED_LOOP",\
+                                         "POSITION_CONTROL_MODE_OPEN_LOOP_SMOOTH",\
+                                         "POSITION_CONTROL_MODE_CLOSED_LOOP_SMOOTH"}
+
 namespace aptserial {
   // ==================================================================================================================
   const std::string channelToString(const PZ_CHANNEL _channel);
@@ -49,6 +98,8 @@ namespace aptserial {
       return APTDevice::identifyDevice(m_channelId);
     }
 
+    void setIOSettings(const PZ_VOLTAGE_RANGE _vRange, const PZ_ANALOG_INPUT_SOURCE _analogInputSource, const APT_CHANNEL _channelId);
+    void getIOSettings(PZ_VOLTAGE_RANGE& _vRange, PZ_ANALOG_INPUT_SOURCE& _analogInputSource, const APT_CHANNEL _channelId);
     void setIOSettings(const PZ_VOLTAGE_RANGE _vRange, const PZ_ANALOG_INPUT_SOURCE _analogInputSource);
     void setIOSettings(const PZ_VOLTAGE_RANGE _vRange) {
       return setIOSettings(_vRange, m_analogInputSource);
@@ -72,6 +123,8 @@ namespace aptserial {
       return std::vector<PZ_ANALOG_INPUT_SOURCE> {PZ_ANALOG_INPUT_SOURCE::ANALOG_INPUT_SOURCE_A, PZ_ANALOG_INPUT_SOURCE::ANALOG_INPUT_SOURCE_B, PZ_ANALOG_INPUT_SOURCE::ANALOG_INPUT_SOURCE_EXTSIG_SMA};
     }
 
+    void setInputVoltageSource(const PZ_INPUT_VOLTAGE_SOURCE _inputVoltageSource, const APT_CHANNEL _channelId);
+    void getInputVoltageSource(PZ_INPUT_VOLTAGE_SOURCE& _inputVoltageSource, const APT_CHANNEL _channelId);
     void setInputVoltageSource(const PZ_INPUT_VOLTAGE_SOURCE _inputVoltageSource);
     void updateInputVoltageSource();
     PZ_INPUT_VOLTAGE_SOURCE getInputVoltageSource() {
@@ -81,6 +134,8 @@ namespace aptserial {
       return std::vector<PZ_INPUT_VOLTAGE_SOURCE> {PZ_INPUT_VOLTAGE_SOURCE::INPUT_VOLTAGE_SOURCE_SW_ONLY, PZ_INPUT_VOLTAGE_SOURCE::INPUT_VOLTAGE_SOURCE_EXT_SIG, PZ_INPUT_VOLTAGE_SOURCE::INPUT_VOLTAGE_SOURCE_POT};
     }
 
+    void setPositionControlMode(const PZ_POSITION_CONTROL_MODE _positionControlMode, const APT_CHANNEL _channelId);
+    void getPositionControlMode(PZ_POSITION_CONTROL_MODE& _positionControlMode, const APT_CHANNEL _channelId);
     void setPositionControlMode(const PZ_POSITION_CONTROL_MODE _positionControlMode);
     void updatePositionControlMode();
     PZ_POSITION_CONTROL_MODE getPositionControlMode() {

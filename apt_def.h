@@ -28,55 +28,6 @@ enum class APT_STATE : uint8_t {
                           "STATE_ENABLE",\
                           "STATE_DISABLE"}
 
-// page 184
-enum class PZ_VOLTAGE_RANGE : uint8_t {
-  VOLTAGE_RANGE_75V = 0x01,
-  VOLTAGE_RANGE_100V,
-  VOLTAGE_RANGE_150V,
-  VOLTAGE_RANGE_N_RANGES
-};
-#define PZ_VOLTAGE_RANGE_LABELS {"VOLTAGE_RANGE_INVALID_0",\
-                                 "VOLTAGE_RANGE_75V",\
-                                 "VOLTAGE_RANGE_100V",\
-                                 "VOLTAGE_RANGE_150V"}
-
-// page 184
-enum class PZ_ANALOG_INPUT_SOURCE : uint8_t {
-  ANALOG_INPUT_SOURCE_A = 0x01,
-  ANALOG_INPUT_SOURCE_B,
-  ANALOG_INPUT_SOURCE_EXTSIG_SMA,
-  ANALOG_INPUT_SOURCE_N_SOURCES
-};
-#define PZ_ANALOG_INPUT_SOURCE_LABELS {"ANALOG_INPUT_SOURCE_INVALID_0",\
-                                       "ANALOG_INPUT_SOURCE_A",\
-                                       "ANALOG_INPUT_SOURCE_B",\
-                                       "ANALOG_INPUT_SOURCE_EXTSIG_SMA"}
-
-// page 160
-enum class PZ_INPUT_VOLTAGE_SOURCE : uint8_t {
-  INPUT_VOLTAGE_SOURCE_SW_ONLY = 0x00,
-  INPUT_VOLTAGE_SOURCE_EXT_SIG = 0x01,
-  INPUT_VOLTAGE_SOURCE_POT = 0x02,
-  INPUT_VOLTAGE_SOURCE_N_SOURCES
-};
-#define PZ_INPUT_VOLTAGE_SOURCE_LABELS {"INPUT_VOLTS_SRC_SW_ONLY",\
-                                        "INPUT_VOLTS_SRC_EXT_SIG",\
-                                        "INPUT_VOLTS_SRC_POT"}
-
-// page 156
-enum class PZ_POSITION_CONTROL_MODE : uint8_t {
-  POSITION_CONTROL_MODE_OPEN_LOOP = 0x01,
-  POSITION_CONTROL_MODE_CLOSED_LOOP,
-  POSITION_CONTROL_MODE_OPEN_LOOP_SMOOTH,
-  POSITION_CONTROL_MODE_CLOSED_LOOP_SMOOTH,
-  POSITION_CONTROL_MODE_N_MODES
-};
-#define PZ_POSITION_CONTROL_MODE_LABELS {"POSITION_CONTROL_MODE_INVALID_0",\
-                                         "POSITION_CONTROL_MODE_OPEN_LOOP",\
-                                         "POSITION_CONTROL_MODE_CLOSED_LOOP",\
-                                         "POSITION_CONTROL_MODE_OPEN_LOOP_SMOOTH",\
-                                         "POSITION_CONTROL_MODE_CLOSED_LOOP_SMOOTH"}
-
 #define APT_MSMSG_TIMEOUT_MS 100
 
 #define APT_MGMSG_SRC_DEST_HOST 0x01

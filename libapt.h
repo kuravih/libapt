@@ -249,14 +249,6 @@ namespace aptserial {
     }
     void stopUpdateMessages(); 
     void identifyDevice(const APT_CHANNEL _channelId);
-    void setIOSettings(const PZ_VOLTAGE_RANGE _vRange, const PZ_ANALOG_INPUT_SOURCE _analogInputSource, const APT_CHANNEL _channelId);
-    void getIOSettings(PZ_VOLTAGE_RANGE& _vRange, PZ_ANALOG_INPUT_SOURCE& _analogInputSource, const APT_CHANNEL _channelId);
-
-    void setInputVoltageSource(const PZ_INPUT_VOLTAGE_SOURCE _inputVoltageSource, const APT_CHANNEL _channelId);
-    void getInputVoltageSource(PZ_INPUT_VOLTAGE_SOURCE& _inputVoltageSource, const APT_CHANNEL _channelId);
-
-    void setPositionControlMode(const PZ_POSITION_CONTROL_MODE _positionControlMode, const APT_CHANNEL _channelId);
-    void getPositionControlMode(PZ_POSITION_CONTROL_MODE& _positionControlMode, const APT_CHANNEL _channelId);
 
     void setDisplaySettings(const uint16_t _brightness_adu);
     void getDisplaySettings(uint16_t& _brightness_adu);
