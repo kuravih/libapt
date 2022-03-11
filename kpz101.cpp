@@ -71,21 +71,22 @@ const bool aptserial::stringToPositionControlMode(const std::string _positionCtr
 }
 
 
-aptserial::KPZ101::KPZ101(const std::string _deviceFileName, const uint8_t _idSrcDest) : APTDevice(_deviceFileName, _idSrcDest), m_channelId(PZ_CHANNEL::CHANNEL_1) {
+aptserial::KPZ101::KPZ101(const std::string _deviceFileName, const uint8_t _idSrcDest) : APTDevice(_deviceFileName, _idSrcDest) {
   updateHWInfo();
 }
 
 
-void aptserial::KPZ101::setIOSettings(const PZ_VOLTAGE_RANGE _vRange, const PZ_ANALOG_INPUT_SOURCE _analogInput, const APT_CHANNEL _channelId) {
+void aptserial::KPZ101::setIOSettings(const PZ_VOLTAGE_RANGE _vRange, const PZ_ANALOG_INPUT_SOURCE _analogInputSource) {
   stChannelIOSettings channelIOSettings;
-  channelIOSettings.channel = (uint16_t)_channelId;
+  channelIOSettings.channel = (uint16_t)PZ_CHANNEL::CHANNEL_1;
   channelIOSettings.voltageRange = (uint16_t)_vRange;
-  channelIOSettings.analogInput = (uint16_t)_analogInput;
+  channelIOSettings.analogInput = (uint16_t)_analogInputSource;
   Write(APT_MGMSG_PZ_SET_TPZ_IOSETTINGS, m_idSrcDest, (char*)&channelIOSettings, sizeof(stChannelIOSettings));
+  updateIOSettings();
 }
 
 
-void aptserial::KPZ101::getIOSettings(PZ_VOLTAGE_RANGE& _vRange, PZ_ANALOG_INPUT_SOURCE& _analogInput, const APT_CHANNEL _channelId) {
+void aptserial::KPZ101::getIOSettings(PZ_VOLTAGE_RANGE& _vRange, PZ_ANALOG_INPUT_SOURCE& _analogInputSource) {
   std::vector<char> replyData = WriteRead(APT_MGMSG_PZ_REQ_TPZ_IOSETTINGS, APT_MGMSG_PZ_GET_TPZ_IOSETTINGS, m_idSrcDest, sizeof(uHeader)+sizeof(stChannelIOSettings));
 
   if (replyData.size() == 0)
@@ -101,31 +102,26 @@ void aptserial::KPZ101::getIOSettings(PZ_VOLTAGE_RANGE& _vRange, PZ_ANALOG_INPUT
     memcpy(&channelIOSettings, replyData.data()+sizeof(uHeader), sizeof(stChannelIOSettings));
 
     _vRange = (PZ_VOLTAGE_RANGE)channelIOSettings.voltageRange;
-    _analogInput = (PZ_ANALOG_INPUT_SOURCE)channelIOSettings.analogInput;
+    _analogInputSource = (PZ_ANALOG_INPUT_SOURCE)channelIOSettings.analogInput;
   }
 }
 
 
-void aptserial::KPZ101::setIOSettings(const PZ_VOLTAGE_RANGE _vRange, const PZ_ANALOG_INPUT_SOURCE _analogInputSource) {
-  setIOSettings(_vRange, _analogInputSource, m_channelId);
-  updateIOSettings();
-}
-
-
 void aptserial::KPZ101::updateIOSettings() {
-  getIOSettings(m_vRange, m_analogInputSource, m_channelId);
+  getIOSettings(m_vRange, m_analogInputSource);
 }
 
 
-void aptserial::KPZ101::setInputVoltageSource(const PZ_INPUT_VOLTAGE_SOURCE _inputVoltageSource, const APT_CHANNEL _channelId) {
+void aptserial::KPZ101::setInputVoltageSource(const PZ_INPUT_VOLTAGE_SOURCE _inputVoltageSource) {
   stChannelSource channelSource;
-  channelSource.channel = (uint16_t)_channelId;
+  channelSource.channel = (uint16_t)PZ_CHANNEL::CHANNEL_1;
   channelSource.source = (uint16_t)_inputVoltageSource;
   Write(APT_MGMSG_PZ_SET_INPUTVOLTSSRC, m_idSrcDest, (char*)&channelSource, sizeof(stChannelSource));
+  updateInputVoltageSource();
 }
 
 
-void aptserial::KPZ101::getInputVoltageSource(PZ_INPUT_VOLTAGE_SOURCE& _inputVoltageSource, const APT_CHANNEL _channelId) {
+void aptserial::KPZ101::getInputVoltageSource(PZ_INPUT_VOLTAGE_SOURCE& _inputVoltageSource) {
   std::vector<char> replyData = WriteRead(APT_MGMSG_PZ_REQ_INPUTVOLTSSRC, APT_MGMSG_PZ_GET_INPUTVOLTSSRC, m_idSrcDest, sizeof(uHeader)+sizeof(stChannelSource));
 
   if (replyData.size() == 0)
@@ -145,23 +141,17 @@ void aptserial::KPZ101::getInputVoltageSource(PZ_INPUT_VOLTAGE_SOURCE& _inputVol
 }
 
 
-void aptserial::KPZ101::setInputVoltageSource(const PZ_INPUT_VOLTAGE_SOURCE _inputVoltageSource) {
-  KPZ101::setInputVoltageSource(_inputVoltageSource, m_channelId);
-  updateInputVoltageSource();
-}
-
-
 void aptserial::KPZ101::updateInputVoltageSource() {
-  KPZ101::getInputVoltageSource(m_inputVoltageSource, m_channelId);
+  KPZ101::getInputVoltageSource(m_inputVoltageSource);
 }
 
 
-void aptserial::KPZ101::setPositionControlMode(const PZ_POSITION_CONTROL_MODE _positionControlMode, const APT_CHANNEL _channelId) {
-  Write(APT_MGMSG_PZ_SET_POSCONTROLMODE, m_idSrcDest, (uint8_t)_channelId, (uint8_t)_positionControlMode);
+void aptserial::KPZ101::setPositionControlMode(const PZ_POSITION_CONTROL_MODE _positionControlMode) {
+  Write(APT_MGMSG_PZ_SET_POSCONTROLMODE, m_idSrcDest, (uint8_t)PZ_CHANNEL::CHANNEL_1, (uint8_t)_positionControlMode);
 }
 
 
-void aptserial::KPZ101::getPositionControlMode(PZ_POSITION_CONTROL_MODE& _positionControlMode, const APT_CHANNEL _channelId) {
+void aptserial::KPZ101::getPositionControlMode(PZ_POSITION_CONTROL_MODE& _positionControlMode) {
   std::vector<char> replyData = WriteRead(APT_MGMSG_PZ_REQ_POSCONTROLMODE, APT_MGMSG_PZ_GET_POSCONTROLMODE, m_idSrcDest);
 
   if (replyData.size() == 0)
@@ -178,35 +168,52 @@ void aptserial::KPZ101::getPositionControlMode(PZ_POSITION_CONTROL_MODE& _positi
 }
 
 
-void aptserial::KPZ101::setPositionControlMode(const PZ_POSITION_CONTROL_MODE _positionControlMode) {
-  aptserial::KPZ101::setPositionControlMode(_positionControlMode, m_channelId);
-  updatePositionControlMode();
-}
-
-
 void aptserial::KPZ101::updatePositionControlMode() {
-  aptserial::KPZ101::getPositionControlMode(m_positionControlMode, m_channelId);
+  aptserial::KPZ101::getPositionControlMode(m_positionControlMode);
 }
 
 
 void aptserial::KPZ101::setOutputVoltage(const uint16_t _voltage_adu) {
-  aptserial::APTDevice::setOutputVoltage(_voltage_adu, m_channelId);
+  stChannelValue channelValue;
+  channelValue.channel = (uint16_t)PZ_CHANNEL::CHANNEL_1;
+  channelValue.value = _voltage_adu;
+  Write(APT_MGMSG_PZ_SET_OUTPUTVOLTS, m_idSrcDest, (char*) &channelValue, sizeof(channelValue));
   updateOutputVoltage();
 }
 
 
+void aptserial::KPZ101::getOutputVoltage(uint16_t& _voltage_adu) {
+  std::vector<char> replyData = WriteRead(APT_MGMSG_PZ_REQ_OUTPUTVOLTS, APT_MGMSG_PZ_GET_OUTPUTVOLTS, m_idSrcDest, sizeof(uHeader)+sizeof(stChannelValue));
+
+  if (replyData.size() == 0)
+    throw SerialPortException("aptdevice.cpp", "getOutputVoltage()", "Reply not received");
+  else {
+    uHeader readHeader;
+    memcpy(readHeader.raw, replyData.data(), sizeof(uHeader));
+
+    if (readHeader.command.messageId != APT_MGMSG_PZ_GET_OUTPUTVOLTS)
+      throw IncorrectHeaderException("aptdevice.cpp", "getOutputVoltage()");
+
+    stChannelValue channelValue;
+    memcpy(&channelValue, replyData.data()+sizeof(uHeader), sizeof(stChannelValue));
+      
+    _voltage_adu = channelValue.value;
+  }
+}
+
+
 void aptserial::KPZ101::updateOutputVoltage() {
-  aptserial::APTDevice::getOutputVoltage(m_voltage_adu, m_channelId);
+  aptserial::KPZ101::getOutputVoltage(m_voltage_adu);
 }
 
 
 void aptserial::KPZ101::setChannelEnableState(const PZ_STATE _state) {
-  aptserial::APTDevice::setChannelEnableState(_state, m_channelId);
+  aptserial::APTDevice::setChannelEnableState(_state, PZ_CHANNEL::CHANNEL_1);
   updateChannelEnableState();
 }
 
 
 void aptserial::KPZ101::updateChannelEnableState() {
-  aptserial::APTDevice::getChannelEnableState(m_state, m_channelId);
+  aptserial::APTDevice::getChannelEnableState(m_state, PZ_CHANNEL::CHANNEL_1);
 }
 // ====================================================================================================================

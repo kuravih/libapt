@@ -427,33 +427,6 @@ void aptserial::APTDevice::getDisplaySettings(uint16_t& _brightness_adu) {
 }
 
 
-void aptserial::APTDevice::setOutputVoltage(const uint16_t _voltage_adu, const APT_CHANNEL _channelId) {
-  stChannelValue channelValue;
-  channelValue.channel = (uint16_t)_channelId;
-  channelValue.value = _voltage_adu;
-  Write(APT_MGMSG_PZ_SET_OUTPUTVOLTS, m_idSrcDest, (char*) &channelValue, sizeof(channelValue));
-}
-
-
-void aptserial::APTDevice::getOutputVoltage(uint16_t& _voltage_adu, const APT_CHANNEL _channelId) {
-  std::vector<char> replyData = WriteRead(APT_MGMSG_PZ_REQ_OUTPUTVOLTS, APT_MGMSG_PZ_GET_OUTPUTVOLTS, m_idSrcDest, sizeof(uHeader)+sizeof(stChannelValue));
-
-  if (replyData.size() == 0)
-    throw SerialPortException("aptdevice.cpp", "getOutputVoltage()", "Reply not received");
-  else {
-    uHeader readHeader;
-    memcpy(readHeader.raw, replyData.data(), sizeof(uHeader));
-
-    if (readHeader.command.messageId != APT_MGMSG_PZ_GET_OUTPUTVOLTS)
-      throw IncorrectHeaderException("aptdevice.cpp", "getOutputVoltage()");
-
-    stChannelValue channelValue;
-    memcpy(&channelValue, replyData.data()+sizeof(uHeader), sizeof(stChannelValue));
-      
-    _voltage_adu = channelValue.value;
-  }
-}
-
 
 void aptserial::APTDevice::setChannelEnableState(const APT_STATE _state, const APT_CHANNEL _channelId) {
   Write(APT_MGMSG_MOD_SET_CHANENABLESTATE, m_idSrcDest, (uint8_t)_channelId, (uint8_t)_state);
@@ -478,7 +451,8 @@ void aptserial::APTDevice::getChannelEnableState(APT_STATE& _state, const APT_CH
     _state = ((bool)(status.status[3]&0b10000000))?(APT_STATE::STATE_ENABLE):(APT_STATE::STATE_DISABLE);
   }
 }
-// ====================================================================================================================
+
+
 const std::string aptserial::channelToString(const APT_CHANNEL _channel) {
   const char* channelStrings[(uint)APT_CHANNEL::CHANNEL_N_CHANNELS] = APT_CHANNEL_LABELS;
   return std::string(channelStrings[(uint)_channel]);

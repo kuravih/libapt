@@ -76,7 +76,6 @@ namespace aptserial {
 
   class KPZ101 : public APTDevice { // Piezo Controller
   private:
-    PZ_CHANNEL m_channelId;
     PZ_ANALOG_INPUT_SOURCE m_analogInputSource;
     PZ_VOLTAGE_RANGE m_vRange;
     PZ_INPUT_VOLTAGE_SOURCE m_inputVoltageSource;
@@ -89,12 +88,11 @@ namespace aptserial {
     KPZ101( const KPZ101& ) = delete; // disallows copy construction: KPZ101 a = b
     KPZ101& operator= ( const KPZ101& ) = delete; // disallows copy assignment: a = b;
     void identifyDevice() {
-      return APTDevice::identifyDevice(m_channelId);
+      return APTDevice::identifyDevice(PZ_CHANNEL::CHANNEL_1);
     }
 
-    void setIOSettings(const PZ_VOLTAGE_RANGE _vRange, const PZ_ANALOG_INPUT_SOURCE _analogInputSource, const APT_CHANNEL _channelId);
-    void getIOSettings(PZ_VOLTAGE_RANGE& _vRange, PZ_ANALOG_INPUT_SOURCE& _analogInputSource, const APT_CHANNEL _channelId);
     void setIOSettings(const PZ_VOLTAGE_RANGE _vRange, const PZ_ANALOG_INPUT_SOURCE _analogInputSource);
+    void getIOSettings(PZ_VOLTAGE_RANGE& _vRange, PZ_ANALOG_INPUT_SOURCE& _analogInputSource);
     void setIOSettings(const PZ_VOLTAGE_RANGE _vRange) {
       return setIOSettings(_vRange, m_analogInputSource);
     }
@@ -117,9 +115,8 @@ namespace aptserial {
       return std::vector<PZ_ANALOG_INPUT_SOURCE> {PZ_ANALOG_INPUT_SOURCE::ANALOG_INPUT_SOURCE_A, PZ_ANALOG_INPUT_SOURCE::ANALOG_INPUT_SOURCE_B, PZ_ANALOG_INPUT_SOURCE::ANALOG_INPUT_SOURCE_EXTSIG_SMA};
     }
 
-    void setInputVoltageSource(const PZ_INPUT_VOLTAGE_SOURCE _inputVoltageSource, const APT_CHANNEL _channelId);
-    void getInputVoltageSource(PZ_INPUT_VOLTAGE_SOURCE& _inputVoltageSource, const APT_CHANNEL _channelId);
     void setInputVoltageSource(const PZ_INPUT_VOLTAGE_SOURCE _inputVoltageSource);
+    void getInputVoltageSource(PZ_INPUT_VOLTAGE_SOURCE& _inputVoltageSource);
     void updateInputVoltageSource();
     PZ_INPUT_VOLTAGE_SOURCE getInputVoltageSource() {
       return m_inputVoltageSource;
@@ -128,9 +125,8 @@ namespace aptserial {
       return std::vector<PZ_INPUT_VOLTAGE_SOURCE> {PZ_INPUT_VOLTAGE_SOURCE::INPUT_VOLTAGE_SOURCE_SW_ONLY, PZ_INPUT_VOLTAGE_SOURCE::INPUT_VOLTAGE_SOURCE_EXT_SIG, PZ_INPUT_VOLTAGE_SOURCE::INPUT_VOLTAGE_SOURCE_POT};
     }
 
-    void setPositionControlMode(const PZ_POSITION_CONTROL_MODE _positionControlMode, const APT_CHANNEL _channelId);
-    void getPositionControlMode(PZ_POSITION_CONTROL_MODE& _positionControlMode, const APT_CHANNEL _channelId);
     void setPositionControlMode(const PZ_POSITION_CONTROL_MODE _positionControlMode);
+    void getPositionControlMode(PZ_POSITION_CONTROL_MODE& _positionControlMode);
     void updatePositionControlMode();
     PZ_POSITION_CONTROL_MODE getPositionControlMode() {
       return m_positionControlMode;
@@ -140,6 +136,7 @@ namespace aptserial {
     }
 
     void setOutputVoltage(const uint16_t _voltage_adu);
+    void getOutputVoltage(uint16_t& _voltage_adu);
     void updateOutputVoltage();
     uint16_t getOutputVoltage() {
       return m_voltage_adu;

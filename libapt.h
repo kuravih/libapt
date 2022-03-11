@@ -253,21 +253,17 @@ namespace aptserial {
     void setDisplaySettings(const uint16_t _brightness_adu);
     void getDisplaySettings(uint16_t& _brightness_adu);
 
-    void setOutputVoltage(const uint16_t _voltage_adu, const APT_CHANNEL _channelId);
-    void getOutputVoltage(uint16_t& _voltage_adu, const APT_CHANNEL _channelId);
-
     void setChannelEnableState(const APT_STATE _state, const APT_CHANNEL _channelId);
     void getChannelEnableState(APT_STATE& _state, const APT_CHANNEL _channelId);
 
     void disconnectDevice();
   };
-  // ===================================================================================================================
+  // ------------------------------------------------------------------------------------------------------------------
   const std::string channelToString(const APT_CHANNEL _channel);
   const bool stringToChannel(const std::string _channelString, APT_CHANNEL& _channel);
 
   const std::string stateToString(const APT_STATE _state);
   const bool stringToState(const std::string _stateString, APT_STATE& _state);
-  // ===================================================================================================================
 }
 
 
