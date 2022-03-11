@@ -5,9 +5,6 @@
 
 #include "libapt.h"
 
-typedef APT_CHANNEL PZ_CHANNEL;
-#define PZ_CHANNEL_LABELS APT_CHANNEL_LABELS
-
 typedef APT_STATE PZ_STATE;
 #define PZ_STATE_LABELS APT_STATE_LABELS
 
@@ -88,7 +85,7 @@ namespace aptserial {
     KPZ101( const KPZ101& ) = delete; // disallows copy construction: KPZ101 a = b
     KPZ101& operator= ( const KPZ101& ) = delete; // disallows copy assignment: a = b;
     void identifyDevice() {
-      return APTDevice::identifyDevice(PZ_CHANNEL::CHANNEL_1);
+      return APTDevice::identifyDevice(APT_CHANNEL::CHANNEL_1);
     }
 
     void setIOSettings(const PZ_VOLTAGE_RANGE _vRange, const PZ_ANALOG_INPUT_SOURCE _analogInputSource);

@@ -78,7 +78,7 @@ aptserial::KPZ101::KPZ101(const std::string _deviceFileName, const uint8_t _idSr
 
 void aptserial::KPZ101::setIOSettings(const PZ_VOLTAGE_RANGE _vRange, const PZ_ANALOG_INPUT_SOURCE _analogInputSource) {
   stChannelIOSettings channelIOSettings;
-  channelIOSettings.channel = (uint16_t)PZ_CHANNEL::CHANNEL_1;
+  channelIOSettings.channel = (uint16_t)APT_CHANNEL::CHANNEL_1;
   channelIOSettings.voltageRange = (uint16_t)_vRange;
   channelIOSettings.analogInput = (uint16_t)_analogInputSource;
   Write(APT_MGMSG_PZ_SET_TPZ_IOSETTINGS, m_idSrcDest, (char*)&channelIOSettings, sizeof(stChannelIOSettings));
@@ -114,7 +114,7 @@ void aptserial::KPZ101::updateIOSettings() {
 
 void aptserial::KPZ101::setInputVoltageSource(const PZ_INPUT_VOLTAGE_SOURCE _inputVoltageSource) {
   stChannelSource channelSource;
-  channelSource.channel = (uint16_t)PZ_CHANNEL::CHANNEL_1;
+  channelSource.channel = (uint16_t)APT_CHANNEL::CHANNEL_1;
   channelSource.source = (uint16_t)_inputVoltageSource;
   Write(APT_MGMSG_PZ_SET_INPUTVOLTSSRC, m_idSrcDest, (char*)&channelSource, sizeof(stChannelSource));
   updateInputVoltageSource();
@@ -147,7 +147,7 @@ void aptserial::KPZ101::updateInputVoltageSource() {
 
 
 void aptserial::KPZ101::setPositionControlMode(const PZ_POSITION_CONTROL_MODE _positionControlMode) {
-  Write(APT_MGMSG_PZ_SET_POSCONTROLMODE, m_idSrcDest, (uint8_t)PZ_CHANNEL::CHANNEL_1, (uint8_t)_positionControlMode);
+  Write(APT_MGMSG_PZ_SET_POSCONTROLMODE, m_idSrcDest, (uint8_t)APT_CHANNEL::CHANNEL_1, (uint8_t)_positionControlMode);
 }
 
 
@@ -175,7 +175,7 @@ void aptserial::KPZ101::updatePositionControlMode() {
 
 void aptserial::KPZ101::setOutputVoltage(const uint16_t _voltage_adu) {
   stChannelValue channelValue;
-  channelValue.channel = (uint16_t)PZ_CHANNEL::CHANNEL_1;
+  channelValue.channel = (uint16_t)APT_CHANNEL::CHANNEL_1;
   channelValue.value = _voltage_adu;
   Write(APT_MGMSG_PZ_SET_OUTPUTVOLTS, m_idSrcDest, (char*) &channelValue, sizeof(channelValue));
   updateOutputVoltage();
@@ -208,12 +208,12 @@ void aptserial::KPZ101::updateOutputVoltage() {
 
 
 void aptserial::KPZ101::setChannelEnableState(const PZ_STATE _state) {
-  aptserial::APTDevice::setChannelEnableState(_state, PZ_CHANNEL::CHANNEL_1);
+  aptserial::APTDevice::setChannelEnableState(_state, APT_CHANNEL::CHANNEL_1);
   updateChannelEnableState();
 }
 
 
 void aptserial::KPZ101::updateChannelEnableState() {
-  aptserial::APTDevice::getChannelEnableState(m_state, PZ_CHANNEL::CHANNEL_1);
+  aptserial::APTDevice::getChannelEnableState(m_state, APT_CHANNEL::CHANNEL_1);
 }
 // ====================================================================================================================
