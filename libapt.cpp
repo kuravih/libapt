@@ -232,7 +232,7 @@ void aptserial::SerialPort::Close() {
 // ====================================================================================================================
 aptserial::APTDevice::APTDevice(const std::string _deviceFileName, const uint8_t _idSrcDest) : m_serialPort(_deviceFileName, aptserial::BaudRate::B_115200), m_idSrcDest(_idSrcDest) {
   stopUpdateMessages();
-  identifyDevice(PZ_CHANNEL::CHANNEL_1);
+  identifyDevice(APT_CHANNEL::CHANNEL_1);
 }
 
 
@@ -389,7 +389,7 @@ void aptserial::APTDevice::updateHWInfo() {
 }
 
 
-void aptserial::APTDevice::identifyDevice(PZ_CHANNEL _channelId) {
+void aptserial::APTDevice::identifyDevice(APT_CHANNEL _channelId) {
   Write(APT_MGMSG_MOD_IDENTIFY, m_idSrcDest, (uint8_t)_channelId);
 }
 
@@ -404,7 +404,7 @@ void aptserial::APTDevice::stopUpdateMessages() {
 }
 
 
-void aptserial::APTDevice::setIOSettings(const PZ_VOLTAGE_RANGE _vRange, const PZ_ANALOG_INPUT_SOURCE _analogInput, const PZ_CHANNEL _channelId) {
+void aptserial::APTDevice::setIOSettings(const PZ_VOLTAGE_RANGE _vRange, const PZ_ANALOG_INPUT_SOURCE _analogInput, const APT_CHANNEL _channelId) {
   stChannelIOSettings channelIOSettings;
   channelIOSettings.channel = (uint16_t)_channelId;
   channelIOSettings.voltageRange = (uint16_t)_vRange;
@@ -413,7 +413,7 @@ void aptserial::APTDevice::setIOSettings(const PZ_VOLTAGE_RANGE _vRange, const P
 }
 
 
-void aptserial::APTDevice::getIOSettings(PZ_VOLTAGE_RANGE& _vRange, PZ_ANALOG_INPUT_SOURCE& _analogInput, const PZ_CHANNEL _channelId) {
+void aptserial::APTDevice::getIOSettings(PZ_VOLTAGE_RANGE& _vRange, PZ_ANALOG_INPUT_SOURCE& _analogInput, const APT_CHANNEL _channelId) {
   std::vector<char> replyData = WriteRead(APT_MGMSG_PZ_REQ_TPZ_IOSETTINGS, APT_MGMSG_PZ_GET_TPZ_IOSETTINGS, m_idSrcDest, sizeof(uHeader)+sizeof(stChannelIOSettings));
 
   if (replyData.size() == 0)
@@ -434,7 +434,7 @@ void aptserial::APTDevice::getIOSettings(PZ_VOLTAGE_RANGE& _vRange, PZ_ANALOG_IN
 }
 
 
-void aptserial::APTDevice::setInputVoltageSource(const PZ_INPUT_VOLTAGE_SOURCE _inputVoltageSource, const PZ_CHANNEL _channelId) {
+void aptserial::APTDevice::setInputVoltageSource(const PZ_INPUT_VOLTAGE_SOURCE _inputVoltageSource, const APT_CHANNEL _channelId) {
   stChannelSource channelSource;
   channelSource.channel = (uint16_t)_channelId;
   channelSource.source = (uint16_t)_inputVoltageSource;
@@ -442,7 +442,7 @@ void aptserial::APTDevice::setInputVoltageSource(const PZ_INPUT_VOLTAGE_SOURCE _
 }
 
 
-void aptserial::APTDevice::getInputVoltageSource(PZ_INPUT_VOLTAGE_SOURCE& _inputVoltageSource, const PZ_CHANNEL _channelId) {
+void aptserial::APTDevice::getInputVoltageSource(PZ_INPUT_VOLTAGE_SOURCE& _inputVoltageSource, const APT_CHANNEL _channelId) {
   std::vector<char> replyData = WriteRead(APT_MGMSG_PZ_REQ_INPUTVOLTSSRC, APT_MGMSG_PZ_GET_INPUTVOLTSSRC, m_idSrcDest, sizeof(uHeader)+sizeof(stChannelSource));
 
   if (replyData.size() == 0)
@@ -462,12 +462,12 @@ void aptserial::APTDevice::getInputVoltageSource(PZ_INPUT_VOLTAGE_SOURCE& _input
 }
 
 
-void aptserial::APTDevice::setPositionControlMode(const PZ_POSITION_CONTROL_MODE _positionControlMode, const PZ_CHANNEL _channelId) {
+void aptserial::APTDevice::setPositionControlMode(const PZ_POSITION_CONTROL_MODE _positionControlMode, const APT_CHANNEL _channelId) {
   Write(APT_MGMSG_PZ_SET_POSCONTROLMODE, m_idSrcDest, (uint8_t)_channelId, (uint8_t)_positionControlMode);
 }
 
 
-void aptserial::APTDevice::getPositionControlMode(PZ_POSITION_CONTROL_MODE& _positionControlMode, const PZ_CHANNEL _channelId) {
+void aptserial::APTDevice::getPositionControlMode(PZ_POSITION_CONTROL_MODE& _positionControlMode, const APT_CHANNEL _channelId) {
   std::vector<char> replyData = WriteRead(APT_MGMSG_PZ_REQ_POSCONTROLMODE, APT_MGMSG_PZ_GET_POSCONTROLMODE, m_idSrcDest);
 
   if (replyData.size() == 0)
@@ -507,7 +507,7 @@ void aptserial::APTDevice::getDisplaySettings(uint16_t& _brightness_adu) {
 }
 
 
-void aptserial::APTDevice::setOutputVoltage(const uint16_t _voltage_adu, const PZ_CHANNEL _channelId) {
+void aptserial::APTDevice::setOutputVoltage(const uint16_t _voltage_adu, const APT_CHANNEL _channelId) {
   stChannelValue channelValue;
   channelValue.channel = (uint16_t)_channelId;
   channelValue.value = _voltage_adu;
@@ -515,7 +515,7 @@ void aptserial::APTDevice::setOutputVoltage(const uint16_t _voltage_adu, const P
 }
 
 
-void aptserial::APTDevice::getOutputVoltage(uint16_t& _voltage_adu, const PZ_CHANNEL _channelId) {
+void aptserial::APTDevice::getOutputVoltage(uint16_t& _voltage_adu, const APT_CHANNEL _channelId) {
   std::vector<char> replyData = WriteRead(APT_MGMSG_PZ_REQ_OUTPUTVOLTS, APT_MGMSG_PZ_GET_OUTPUTVOLTS, m_idSrcDest, sizeof(uHeader)+sizeof(stChannelValue));
 
   if (replyData.size() == 0)
@@ -535,12 +535,12 @@ void aptserial::APTDevice::getOutputVoltage(uint16_t& _voltage_adu, const PZ_CHA
 }
 
 
-void aptserial::APTDevice::setChannelEnableState(const PZ_STATE _state, const PZ_CHANNEL _channelId) {
+void aptserial::APTDevice::setChannelEnableState(const APT_STATE _state, const APT_CHANNEL _channelId) {
   Write(APT_MGMSG_MOD_SET_CHANENABLESTATE, m_idSrcDest, (uint8_t)_channelId, (uint8_t)_state);
 }
 
 
-void aptserial::APTDevice::getChannelEnableState(PZ_STATE& _state, const PZ_CHANNEL _channelId) {
+void aptserial::APTDevice::getChannelEnableState(APT_STATE& _state, const APT_CHANNEL _channelId) {
   std::vector<char> replyData = WriteRead(APT_MGMSG_PZ_REQ_PZSTATUSUPDATE, APT_MGMSG_PZ_GET_PZSTATUSUPDATE, m_idSrcDest, sizeof(uHeader)+sizeof(stStatus));
 
   if (replyData.size() == 0)
@@ -555,7 +555,7 @@ void aptserial::APTDevice::getChannelEnableState(PZ_STATE& _state, const PZ_CHAN
     stStatus status;
     memcpy(&status, replyData.data()+sizeof(uHeader), sizeof(stStatus));
 
-    _state = ((bool)(status.status[3]&0b10000000))?(PZ_STATE::STATE_ENABLE):(PZ_STATE::STATE_DISABLE);
+    _state = ((bool)(status.status[3]&0b10000000))?(APT_STATE::STATE_ENABLE):(APT_STATE::STATE_DISABLE);
   }
 }
 // ====================================================================================================================

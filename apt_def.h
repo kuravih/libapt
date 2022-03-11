@@ -3,14 +3,14 @@
 
 
 // page 41, 42
-enum class PZ_CHANNEL : uint8_t {
+enum class APT_CHANNEL : uint8_t {
   CHANNEL_1 = 0x01,
   CHANNEL_2 = 0x02,
   CHANNEL_3 = 0x04,
   CHANNEL_4 = 0x08,
   CHANNEL_N_CHANNELS
 };
-#define PZ_CHANNEL_LABELS {"CHANNEL_INVALID_0",\
+#define APT_CHANNEL_LABELS {"CHANNEL_INVALID_0",\
                            "CHANNEL_1",\
                            "CHANNEL_2",\
                            "CHANNEL_INVALID_3",\
@@ -19,14 +19,14 @@ enum class PZ_CHANNEL : uint8_t {
                            "CHANNEL_4"}
 
 // page 42
-enum class PZ_STATE : uint8_t {
+enum class APT_STATE : uint8_t {
   STATE_ENABLE = 0x01,
   STATE_DISABLE = 0x02,
   STATE_N_STATES
 };
-#define PZ_STATE_LABELS {"STATE_INVALID_0",\
-                         "STATE_ENABLE",\
-                         "STATE_DISABLE"}
+#define APT_STATE_LABELS {"STATE_INVALID_0",\
+                          "STATE_ENABLE",\
+                          "STATE_DISABLE"}
 
 // page 184
 enum class PZ_VOLTAGE_RANGE : uint8_t {

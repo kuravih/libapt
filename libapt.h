@@ -248,24 +248,24 @@ namespace aptserial {
       return m_hwInfo;
     }
     void stopUpdateMessages(); 
-    void identifyDevice(const PZ_CHANNEL _channelId);
-    void setIOSettings(const PZ_VOLTAGE_RANGE _vRange, const PZ_ANALOG_INPUT_SOURCE _analogInputSource, const PZ_CHANNEL _channelId);
-    void getIOSettings(PZ_VOLTAGE_RANGE& _vRange, PZ_ANALOG_INPUT_SOURCE& _analogInputSource, const PZ_CHANNEL _channelId);
+    void identifyDevice(const APT_CHANNEL _channelId);
+    void setIOSettings(const PZ_VOLTAGE_RANGE _vRange, const PZ_ANALOG_INPUT_SOURCE _analogInputSource, const APT_CHANNEL _channelId);
+    void getIOSettings(PZ_VOLTAGE_RANGE& _vRange, PZ_ANALOG_INPUT_SOURCE& _analogInputSource, const APT_CHANNEL _channelId);
 
-    void setInputVoltageSource(const PZ_INPUT_VOLTAGE_SOURCE _inputVoltageSource, const PZ_CHANNEL _channelId);
-    void getInputVoltageSource(PZ_INPUT_VOLTAGE_SOURCE& _inputVoltageSource, const PZ_CHANNEL _channelId);
+    void setInputVoltageSource(const PZ_INPUT_VOLTAGE_SOURCE _inputVoltageSource, const APT_CHANNEL _channelId);
+    void getInputVoltageSource(PZ_INPUT_VOLTAGE_SOURCE& _inputVoltageSource, const APT_CHANNEL _channelId);
 
-    void setPositionControlMode(const PZ_POSITION_CONTROL_MODE _positionControlMode, const PZ_CHANNEL _channelId);
-    void getPositionControlMode(PZ_POSITION_CONTROL_MODE& _positionControlMode, const PZ_CHANNEL _channelId);
+    void setPositionControlMode(const PZ_POSITION_CONTROL_MODE _positionControlMode, const APT_CHANNEL _channelId);
+    void getPositionControlMode(PZ_POSITION_CONTROL_MODE& _positionControlMode, const APT_CHANNEL _channelId);
 
     void setDisplaySettings(const uint16_t _brightness_adu);
     void getDisplaySettings(uint16_t& _brightness_adu);
 
-    void setOutputVoltage(const uint16_t _voltage_adu, const PZ_CHANNEL _channelId);
-    void getOutputVoltage(uint16_t& _voltage_adu, const PZ_CHANNEL _channelId);
+    void setOutputVoltage(const uint16_t _voltage_adu, const APT_CHANNEL _channelId);
+    void getOutputVoltage(uint16_t& _voltage_adu, const APT_CHANNEL _channelId);
 
-    void setChannelEnableState(const PZ_STATE _state, const PZ_CHANNEL _channelId);
-    void getChannelEnableState(PZ_STATE& _state, const PZ_CHANNEL _channelId);
+    void setChannelEnableState(const APT_STATE _state, const APT_CHANNEL _channelId);
+    void getChannelEnableState(APT_STATE& _state, const APT_CHANNEL _channelId);
 
     void disconnectDevice();
   };

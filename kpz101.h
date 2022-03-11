@@ -5,6 +5,12 @@
 
 #include "libapt.h"
 
+typedef APT_CHANNEL PZ_CHANNEL;
+#define PZ_CHANNEL_LABELS APT_CHANNEL_LABELS
+
+typedef APT_STATE PZ_STATE;
+#define PZ_STATE_LABELS APT_STATE_LABELS
+
 namespace aptserial {
   // ==================================================================================================================
   const std::string channelToString(const PZ_CHANNEL _channel);
