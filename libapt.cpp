@@ -76,7 +76,7 @@ aptserial::SerialPort::~SerialPort() {
 struct termios aptserial::SerialPort::GetTermios() {
   struct termios tty;
   if (tcgetattr(m_fileDescriptor, &tty) != 0)
-    throw SerialPortException("aptdevice.cpp", "GetTermios()", "tcgetattr() failed.");
+    throw SerialPortException("libapt.cpp", "GetTermios()", "tcgetattr() failed.");
   return tty;
 }
 
@@ -84,7 +84,7 @@ struct termios aptserial::SerialPort::GetTermios() {
 void aptserial::SerialPort::SetTermios(struct termios& _tty) {
   tcflush(m_fileDescriptor, TCIFLUSH);
   if (tcsetattr(m_fileDescriptor, TCSANOW, &_tty) != 0)
-    throw SerialPortException("aptdevice.cpp", "SetTermios()", "tcsetattr() failed.");
+    throw SerialPortException("libapt.cpp", "SetTermios()", "tcsetattr() failed.");
 }
 
 
@@ -150,11 +150,11 @@ void aptserial::SerialPort::ConfigureTermios() {
 
 void aptserial::SerialPort::Open() {
   if(m_device.empty())
-    throw SerialPortException("aptdevice.cpp", "Open()", "m_device not specified [m_device.empty()]");
+    throw SerialPortException("libapt.cpp", "Open()", "m_device not specified [m_device.empty()]");
 
   m_fileDescriptor = open(m_device.c_str(), O_RDWR);
   if(m_fileDescriptor <= 0)
-    throw SerialPortException("aptdevice.cpp", "Open()", "Opening m_device failed [m_fileDescriptor <= 0]");
+    throw SerialPortException("libapt.cpp", "Open()", "Opening m_device failed [m_fileDescriptor <= 0]");
 
   ConfigureTermios();
 
@@ -164,17 +164,17 @@ void aptserial::SerialPort::Open() {
 
 size_t aptserial::SerialPort::Write(const std::vector<char>& _data) {
   if(m_state != State::OPEN)
-    throw SerialPortException("aptdevice.cpp", "Write()", "Port not opened [m_state != State::OPEN]");
+    throw SerialPortException("libapt.cpp", "Write()", "Port not opened [m_state != State::OPEN]");
 
   if(m_fileDescriptor <= 0)
-    throw SerialPortException("aptdevice.cpp", "Write()", "Opening m_device failed [m_fileDescriptor <= 0]");
+    throw SerialPortException("libapt.cpp", "Write()", "Opening m_device failed [m_fileDescriptor <= 0]");
 
   tcflush(m_fileDescriptor, TCIOFLUSH);
   size_t writeResult = write(m_fileDescriptor, _data.data(), _data.size());
   tcdrain(m_fileDescriptor);
 
   if (writeResult < 0)
-    throw SerialPortException("aptdevice.cpp", "Write()", "Write failed.");
+    throw SerialPortException("libapt.cpp", "Write()", "Write failed.");
 
   return writeResult;
 }
@@ -182,7 +182,7 @@ size_t aptserial::SerialPort::Write(const std::vector<char>& _data) {
 
 const std::vector<char> aptserial::SerialPort::Read() {
   if(m_fileDescriptor == 0)
-    throw SerialPortException("aptdevice.cpp", "Read()", "Port not opened [m_fileDescriptor == 0]");
+    throw SerialPortException("libapt.cpp", "Read()", "Port not opened [m_fileDescriptor == 0]");
 
   // Read from file
   // We provide the underlying raw array from the readBuffer_ vector to this C api.
@@ -191,7 +191,7 @@ const std::vector<char> aptserial::SerialPort::Read() {
   ssize_t num = read(m_fileDescriptor, &m_readBuffer[0], m_readBuffer.size());
   // Error Handling
   if(num < 0) // Read was unsuccessful
-    throw SerialPortException("aptdevice.cpp", "Read()", "No bytes read.");
+    throw SerialPortException("libapt.cpp", "Read()", "No bytes read.");
   else 
     m_readBuffer.resize(num);
 
@@ -203,7 +203,7 @@ void aptserial::SerialPort::Close() {
   if(m_fileDescriptor != -1) {
     auto retVal = close(m_fileDescriptor);
     if(retVal != 0)
-      throw SerialPortException("aptdevice.cpp", "Close()", "Tired to close but failed.");
+      throw SerialPortException("libapt.cpp", "Close()", "Tired to close but failed.");
     m_fileDescriptor = -1;
   }
   m_state = State::CLOSED;
@@ -276,7 +276,7 @@ const std::vector<char> aptserial::APTDevice::Read(const uint16_t _expect, const
     while ( ((((processReplyData[1]&0xFF)<<8)+(processReplyData[0]&0xFF)) != (_expect&0xFFF)) && (processReplyData.size() > 0) ) // compare first two bytes to the expected
       processReplyData.pop_front();
   } catch(const std::exception& e) {
-    throw IncorrectHeaderException("aptdevice.cpp", "Read()");
+    throw IncorrectHeaderException("libapt.cpp", "Read()");
   }
 
   if (_expectLength != 0)
@@ -299,7 +299,7 @@ const std::vector<char> aptserial::APTDevice::WriteRead(const uint16_t _messageI
       replyData = Read(_expect, expectReplyLength);
       usleep(APT_SLEEP_US);
   
-      LogMessage("aptdevice.cpp","WriteRead()","writeLength = "+std::to_string(writeLength)+", replyData = "+std::to_string(replyData.size())+", expectReplyLength = "+std::to_string(expectReplyLength));
+      LogMessage("libapt.cpp","WriteRead()","writeLength = "+std::to_string(writeLength)+", replyData = "+std::to_string(replyData.size())+", expectReplyLength = "+std::to_string(expectReplyLength));
 
       if (replyData.size()==expectReplyLength)
         break;
@@ -310,7 +310,7 @@ const std::vector<char> aptserial::APTDevice::WriteRead(const uint16_t _messageI
       if (++tries == APT_MAX_TIRES)
         throw _exception;
     }
-    LogMessage("aptdevice.cpp","WriteRead()","Attempt "+std::to_string(tries)+" of "+std::to_string(APT_MAX_TIRES));
+    LogMessage("libapt.cpp","WriteRead()","Attempt "+std::to_string(tries)+" of "+std::to_string(APT_MAX_TIRES));
   }
   return replyData;
 }
@@ -327,7 +327,7 @@ const std::vector<char> aptserial::APTDevice::WriteRead(const uint16_t _messageI
       replyData = Read(_expect,expectReplyLength);
       usleep(APT_SLEEP_US);
 
-      LogMessage("aptdevice.cpp","WriteRead()","writeLength = "+std::to_string(writeLength)+", replyData = "+std::to_string(replyData.size())+", expectReplyLength = "+std::to_string(expectReplyLength));
+      LogMessage("libapt.cpp","WriteRead()","writeLength = "+std::to_string(writeLength)+", replyData = "+std::to_string(replyData.size())+", expectReplyLength = "+std::to_string(expectReplyLength));
 
       if (replyData.size()==expectReplyLength)
         break;
@@ -339,7 +339,7 @@ const std::vector<char> aptserial::APTDevice::WriteRead(const uint16_t _messageI
       if (++tries == APT_MAX_TIRES)
         throw _exception;
     }
-    LogMessage("aptdevice.cpp","WriteRead()","Attempt "+std::to_string(tries)+" of "+std::to_string(APT_MAX_TIRES));
+    LogMessage("libapt.cpp","WriteRead()","Attempt "+std::to_string(tries)+" of "+std::to_string(APT_MAX_TIRES));
   }
   return replyData;
 }
@@ -349,13 +349,13 @@ void aptserial::APTDevice::updateHWInfo() {
   std::vector<char> replyData = WriteRead(APT_MGMSG_HW_REQ_INFO, APT_MGMSG_HW_GET_INFO, m_idSrcDest, sizeof(uHeader)+sizeof(stHWInfo));
 
   if (replyData.size() == 0)
-    throw SerialPortException("aptdevice.cpp", "updateHWInfo()", "Reply not received");
+    throw SerialPortException("libapt.cpp", "updateHWInfo()", "Reply not received");
   else {
     uHeader readHeader;
     memcpy(readHeader.raw, replyData.data(), sizeof(uHeader));
 
     if (readHeader.command.messageId != APT_MGMSG_HW_GET_INFO)
-      throw IncorrectHeaderException("aptdevice.cpp", "updateHWInfo()");
+      throw IncorrectHeaderException("libapt.cpp", "updateHWInfo()");
 
     stHWInfo hwInfo;
     memcpy(&hwInfo, replyData.data()+sizeof(uHeader), replyData.size()-sizeof(uHeader));
@@ -414,13 +414,13 @@ void aptserial::APTDevice::getDisplaySettings(uint16_t& _brightness_adu) {
   std::vector<char> replyData = WriteRead(APT_MGMSG_PZ_REQ_TPZ_DISPSETTINGS, APT_MGMSG_PZ_GET_TPZ_DISPSETTINGS, m_idSrcDest, sizeof(uHeader)+2);
 
   if (replyData.size() == 0)
-    throw SerialPortException("aptdevice.cpp", "getDisplaySettings()", "Reply not received");
+    throw SerialPortException("libapt.cpp", "getDisplaySettings()", "Reply not received");
   else {
     uHeader readHeader;
     memcpy(readHeader.raw, replyData.data(), sizeof(uHeader));
 
     if (readHeader.command.messageId != APT_MGMSG_PZ_GET_TPZ_DISPSETTINGS)
-      throw IncorrectHeaderException("aptdevice.cpp", "getDisplaySettings()");
+      throw IncorrectHeaderException("libapt.cpp", "getDisplaySettings()");
       
     memcpy(&_brightness_adu, replyData.data()+sizeof(uHeader), sizeof(uint16_t));
   }
@@ -436,13 +436,13 @@ void aptserial::APTDevice::getChannelEnableState(APT_STATE& _state, const APT_CH
   std::vector<char> replyData = WriteRead(APT_MGMSG_PZ_REQ_PZSTATUSUPDATE, APT_MGMSG_PZ_GET_PZSTATUSUPDATE, m_idSrcDest, sizeof(uHeader)+sizeof(stStatus));
 
   if (replyData.size() == 0)
-    throw SerialPortException("aptdevice.cpp", "getChannelEnableState()", "Reply not received");
+    throw SerialPortException("libapt.cpp", "getChannelEnableState()", "Reply not received");
   else {
     uHeader readHeader;
     memcpy(readHeader.raw, replyData.data(), sizeof(uHeader));
 
     if (readHeader.command.messageId != APT_MGMSG_PZ_GET_PZSTATUSUPDATE)
-      throw IncorrectHeaderException("aptdevice.cpp", "getChannelEnableState()");
+      throw IncorrectHeaderException("libapt.cpp", "getChannelEnableState()");
 
     stStatus status;
     memcpy(&status, replyData.data()+sizeof(uHeader), sizeof(stStatus));

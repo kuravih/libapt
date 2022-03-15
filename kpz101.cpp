@@ -90,13 +90,13 @@ void aptserial::KPZ101::getIOSettings(PZ_VOLTAGE_RANGE& _vRange, PZ_ANALOG_INPUT
   std::vector<char> replyData = WriteRead(APT_MGMSG_PZ_REQ_TPZ_IOSETTINGS, APT_MGMSG_PZ_GET_TPZ_IOSETTINGS, m_idSrcDest, sizeof(uHeader)+sizeof(stChannelIOSettings));
 
   if (replyData.size() == 0)
-    throw SerialPortException("aptdevice.cpp", "getIOSettings()", "Reply not received");
+    throw SerialPortException("kpz101.cpp", "getIOSettings()", "Reply not received");
   else {
     uHeader readHeader;
     memcpy(readHeader.raw, replyData.data(), sizeof(uHeader));
 
     if (readHeader.command.messageId != APT_MGMSG_PZ_GET_TPZ_IOSETTINGS)
-      throw IncorrectHeaderException("aptdevice.cpp", "getIOSettings()");
+      throw IncorrectHeaderException("kpz101.cpp", "getIOSettings()");
 
     stChannelIOSettings channelIOSettings;
     memcpy(&channelIOSettings, replyData.data()+sizeof(uHeader), sizeof(stChannelIOSettings));
@@ -125,13 +125,13 @@ void aptserial::KPZ101::getInputVoltageSource(PZ_INPUT_VOLTAGE_SOURCE& _inputVol
   std::vector<char> replyData = WriteRead(APT_MGMSG_PZ_REQ_INPUTVOLTSSRC, APT_MGMSG_PZ_GET_INPUTVOLTSSRC, m_idSrcDest, sizeof(uHeader)+sizeof(stChannelSource));
 
   if (replyData.size() == 0)
-    throw SerialPortException("aptdevice.cpp", "getInputVoltageSource()", "Reply not received");
+    throw SerialPortException("kpz101.cpp", "getInputVoltageSource()", "Reply not received");
   else {
     uHeader readHeader;
     memcpy(readHeader.raw, replyData.data(), sizeof(uHeader));
 
     if (readHeader.command.messageId != APT_MGMSG_PZ_GET_INPUTVOLTSSRC)
-      throw IncorrectHeaderException("aptdevice.cpp", "getInputVoltageSource()");
+      throw IncorrectHeaderException("kpz101.cpp", "getInputVoltageSource()");
 
     stChannelSource channelSource;
     memcpy(&channelSource, replyData.data()+sizeof(uHeader), sizeof(stChannelSource));
@@ -155,13 +155,13 @@ void aptserial::KPZ101::getPositionControlMode(PZ_POSITION_CONTROL_MODE& _positi
   std::vector<char> replyData = WriteRead(APT_MGMSG_PZ_REQ_POSCONTROLMODE, APT_MGMSG_PZ_GET_POSCONTROLMODE, m_idSrcDest);
 
   if (replyData.size() == 0)
-    throw SerialPortException("aptdevice.cpp", "getPositionControlMode()", "Reply not received");
+    throw SerialPortException("kpz101.cpp", "getPositionControlMode()", "Reply not received");
   else {
     uHeader readHeader;
     memcpy(readHeader.raw, replyData.data(), sizeof(uHeader));
 
     if (readHeader.command.messageId != APT_MGMSG_PZ_GET_POSCONTROLMODE)
-      throw IncorrectHeaderException("aptdevice.cpp", "getPositionControlMode()");
+      throw IncorrectHeaderException("kpz101.cpp", "getPositionControlMode()");
 
     _positionControlMode = (PZ_POSITION_CONTROL_MODE)readHeader.command.param2;
   }
@@ -186,13 +186,13 @@ void aptserial::KPZ101::getOutputVoltage(uint16_t& _voltage_adu) {
   std::vector<char> replyData = WriteRead(APT_MGMSG_PZ_REQ_OUTPUTVOLTS, APT_MGMSG_PZ_GET_OUTPUTVOLTS, m_idSrcDest, sizeof(uHeader)+sizeof(stChannelValue));
 
   if (replyData.size() == 0)
-    throw SerialPortException("aptdevice.cpp", "getOutputVoltage()", "Reply not received");
+    throw SerialPortException("kpz101.cpp", "getOutputVoltage()", "Reply not received");
   else {
     uHeader readHeader;
     memcpy(readHeader.raw, replyData.data(), sizeof(uHeader));
 
     if (readHeader.command.messageId != APT_MGMSG_PZ_GET_OUTPUTVOLTS)
-      throw IncorrectHeaderException("aptdevice.cpp", "getOutputVoltage()");
+      throw IncorrectHeaderException("kpz101.cpp", "getOutputVoltage()");
 
     stChannelValue channelValue;
     memcpy(&channelValue, replyData.data()+sizeof(uHeader), sizeof(stChannelValue));
