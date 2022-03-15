@@ -75,18 +75,18 @@ namespace aptserial {
     struct stChannelValue { // page 174
       uint16_t channel = 0x0000;
       uint16_t value = 0x0000;
-    };
+    } __attribute__((packed));
     struct stChannelSource { // page 176
       uint16_t channel = 0x0000;
       uint16_t source = 0x0000;
-    };
+    } __attribute__((packed));
     struct stChannelIOSettings { // page 200
       uint16_t channel = 0x0000;
       uint16_t voltageRange = 0x0000;
       uint16_t analogInput = 0x0000;
       uint16_t future1 = 0x0000;
       uint16_t future2 = 0x0000;
-    };
+    } __attribute__((packed));
   private:
     PZ_ANALOG_INPUT_SOURCE m_analogInputSource;
     PZ_VOLTAGE_RANGE m_vRange;

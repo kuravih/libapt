@@ -73,6 +73,11 @@ const bool aptserial::stringToPositionControlMode(const std::string _positionCtr
 
 aptserial::KPZ101::KPZ101(const std::string _deviceFileName, const uint8_t _idSrcDest) : APTDevice(_deviceFileName, _idSrcDest) {
   updateHWInfo();
+  updateIOSettings();
+  updateInputVoltageSource();
+  updatePositionControlMode();
+  updateOutputVoltage();
+  updateChannelEnableState();
 }
 
 
