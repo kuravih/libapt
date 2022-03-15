@@ -7,7 +7,7 @@ using namespace std;
 
 int main() {
 
-  aptserial::KPZ101 piezo("/dev/ttyUSB0", APT_MGMSG_SRC_DEST_GENERIC_USB);
+  aptserial::KPZ101 piezo("/dev/ttyUSB0");
 
   sleep(1);
 

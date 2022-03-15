@@ -71,7 +71,7 @@ const bool aptserial::stringToPositionControlMode(const std::string _positionCtr
 }
 
 
-aptserial::KPZ101::KPZ101(const std::string _deviceFileName, const uint8_t _idSrcDest) : APTDevice(_deviceFileName, _idSrcDest) {
+aptserial::KPZ101::KPZ101(const std::string _deviceFileName) : APTDevice(_deviceFileName, APT_MGMSG_SRC_DEST_GENERIC_USB) {
   updateHWInfo();
   updateIOSettings();
   updateInputVoltageSource();
