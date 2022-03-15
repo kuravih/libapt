@@ -181,26 +181,6 @@ namespace aptserial {
     uint8_t status[4] = {0};
   };
 
-  // page 184
-  struct stChannelIOSettings {
-    uint16_t channel = 0x0000;
-    uint16_t voltageRange = 0x0000;
-    uint16_t analogInput = 0x0000;
-    uint16_t future1 = 0x0000;
-    uint16_t future2 = 0x0000;
-  };
-
-  struct stChannelSource {
-    uint16_t channel = 0x0000;
-    uint16_t source = 0x0000;
-  };
-
-  // page 158, 159
-  struct stChannelValue {
-    uint16_t channel = 0x0000;
-    uint16_t value = 0x0000;
-  };
-
   struct HWInfo {
     std::string identifier;
     std::string serial;

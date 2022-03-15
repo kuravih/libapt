@@ -72,6 +72,21 @@ namespace aptserial {
   const bool stringToPositionControlMode(const std::string _positionCtrlModeString, PZ_POSITION_CONTROL_MODE& _positionCtrlMode);
 
   class KPZ101 : public APTDevice { // Piezo Controller
+    struct stChannelValue { // page 174
+      uint16_t channel = 0x0000;
+      uint16_t value = 0x0000;
+    };
+    struct stChannelSource { // page 176
+      uint16_t channel = 0x0000;
+      uint16_t source = 0x0000;
+    };
+    struct stChannelIOSettings { // page 200
+      uint16_t channel = 0x0000;
+      uint16_t voltageRange = 0x0000;
+      uint16_t analogInput = 0x0000;
+      uint16_t future1 = 0x0000;
+      uint16_t future2 = 0x0000;
+    };
   private:
     PZ_ANALOG_INPUT_SOURCE m_analogInputSource;
     PZ_VOLTAGE_RANGE m_vRange;
