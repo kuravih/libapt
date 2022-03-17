@@ -6,9 +6,6 @@
 
 using namespace std;
 
-// 1365330 = 0.0625mm on display
-// 136533 = 1 mm on zfs25
-
 int main() {
 
   aptserial::KST101 stepper1("/dev/ttyUSB1");

@@ -2,7 +2,6 @@
 
 #include <string.h>
 #include <unistd.h>
-#include <iostream>
 
 // ====================================================================================================================
 const std::string aptserial::actuatorTypeToString(const ST_ACTUATOR_TYPE _actType) {
