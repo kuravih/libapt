@@ -76,7 +76,7 @@ namespace aptserial {
   private:
     int m_fileDescriptor;
     std::string m_device;
-    BaudRate m_baudRate = BaudRate::B_115200;
+    BaudRate m_baudRate;
     speed_t m_baudRateCustom; // future
     int32_t m_timeout_ms = APT_SERAIL_DEFAULT_TIMEOUT_MS;
     bool m_echo;
@@ -218,9 +218,11 @@ namespace aptserial {
     void updateHWInfo();
     size_t Write(const uint16_t _messageId, const uint8_t _destination, const uint8_t _param1=0, const uint8_t _param2=0);
     size_t Write(const uint16_t _messageId, const uint8_t _destination, const char* _ptrData, const uint16_t _dataLength);
-    const std::vector<char> Read(const uint16_t _expect, const uint8_t _expectLength=0);
-    const std::vector<char> WriteRead(const uint16_t _messageId, const uint16_t _expect, const uint8_t _destination, const uint8_t _expectLength=0, const uint8_t _param1=0, const uint8_t _param2=0);
-    const std::vector<char> WriteRead(const uint16_t _messageId, const uint16_t _expect, const uint8_t _destination, const char* _ptrData, const uint16_t _dataLength, const uint8_t _expectLength=0);
+    const std::vector<char> Read(const uint16_t _expectMessageId, const uint8_t _expectLength=0);
+    const std::vector<char> Try_Write_Read(const uint16_t _messageId, const uint16_t _expectMessageId, const uint8_t _destination, const uint8_t _expectLength=0, const uint8_t _param1=0, const uint8_t _param2=0);
+    const std::vector<char> Try_Write_Read(const uint16_t _messageId, const uint16_t _expectMessageId, const uint8_t _destination, const char* _ptrData, const uint16_t _dataLength, const uint8_t _expectLength=0);
+    const std::vector<char> Write_Try_Read(const uint16_t _messageId, const uint16_t _expectMessageId, const uint8_t _destination, const uint8_t _expectLength=0, const uint8_t _param1=0, const uint8_t _param2=0);
+    const std::vector<char> Write_Try_Read(const uint16_t _messageId, const uint16_t _expectMessageId, const uint8_t _destination, const char* _ptrData, const uint16_t _dataLength, const uint8_t _expectLength=0);
   public:
     APTDevice(const std::string _deviceFileName, const uint8_t _idSrcDest);
     ~APTDevice();

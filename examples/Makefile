@@ -9,12 +9,15 @@ CFLAGS:=$(DEBUG_FLAGS) $(INCLUDE_FLAGS) $(OPTIMIZE_FLAGS) $(WARNING_FLAGS)
 APT_LIB=-L.. -lapt 
 APT_INCLUDE=-I..
 
-TESTS = test_kpz101
+TESTS = test_kpz101 test_kst101
 
 all: $(TESTS)
 
 test_kpz101: libapt.a test_kpz101.cpp
 	$(CXX) $(CFLAGS) $(APT_INCLUDE) -o test_kpz101 test_kpz101.cpp $(APT_LIB) $(LIBRARY_FLAGS)
+
+test_kst101: libapt.a test_kst101.cpp
+	$(CXX) $(CFLAGS) $(APT_INCLUDE) -o test_kst101 test_kst101.cpp $(APT_LIB) $(LIBRARY_FLAGS)
 
 libapt.a:
 	make -C ..

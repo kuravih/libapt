@@ -269,12 +269,12 @@ size_t aptserial::APTDevice::Write(const uint16_t _messageId, const uint8_t _des
 }
 
 
-const std::vector<char> aptserial::APTDevice::Read(const uint16_t _expect, const uint8_t _expectLength) {
+const std::vector<char> aptserial::APTDevice::Read(const uint16_t _expectMessageId, const uint8_t _expectLength) {
   std::vector<char> replyData = m_serialPort.Read();
   std::deque<char> processReplyData(replyData.begin(), replyData.end());
   try {
-    while ( ((((processReplyData[1]&0xFF)<<8)+(processReplyData[0]&0xFF)) != (_expect&0xFFF)) && (processReplyData.size() > 0) ) // compare first two bytes to the expected
-      processReplyData.pop_front();
+    while ( ((((processReplyData[1]&0xFF)<<8)+(processReplyData[0]&0xFF)) != (_expectMessageId&0xFFF)) && (processReplyData.size() > 0) ) // compare first 12 bits to the expected
+      processReplyData.pop_front(); // if does not match remove the front element and retry, this is because sometimes reads garbage bytes, do not know why
   } catch(const std::exception& e) {
     throw IncorrectHeaderException("libapt.cpp", "Read()");
   }
@@ -288,18 +288,18 @@ const std::vector<char> aptserial::APTDevice::Read(const uint16_t _expect, const
 }
 
 
-const std::vector<char> aptserial::APTDevice::WriteRead(const uint16_t _messageId, const uint16_t _expect, const uint8_t _destination, const uint8_t _expectLength, const uint8_t _param1, const uint8_t _param2) {
+const std::vector<char> aptserial::APTDevice::Try_Write_Read(const uint16_t _messageId, const uint16_t _expectMessageId, const uint8_t _destination, const uint8_t _expectLength, const uint8_t _param1, const uint8_t _param2) {
   uint tries = 0;
   std::vector<char> replyData;
   while(true) {
     try {
       size_t writeLength = Write(_messageId,_destination,_param1,_param2);
       usleep(APT_SLEEP_US);
-      size_t expectReplyLength = (_expectLength==0)?writeLength:_expectLength;
-      replyData = Read(_expect, expectReplyLength);
+      size_t expectReplyLength = (_expectLength==0)?writeLength:_expectLength; // TODO: make _expectLength required, and avoid this
+      replyData = Read(_expectMessageId, expectReplyLength);
       usleep(APT_SLEEP_US);
   
-      LogMessage("libapt.cpp","WriteRead()","writeLength = "+std::to_string(writeLength)+", replyData = "+std::to_string(replyData.size())+", expectReplyLength = "+std::to_string(expectReplyLength));
+      LogMessage("libapt.cpp","Try_Write_Read()","writeLength = "+std::to_string(writeLength)+", replyData = "+std::to_string(replyData.size())+", expectReplyLength = "+std::to_string(expectReplyLength));
 
       if (replyData.size()==expectReplyLength)
         break;
@@ -310,24 +310,24 @@ const std::vector<char> aptserial::APTDevice::WriteRead(const uint16_t _messageI
       if (++tries == APT_MAX_TIRES)
         throw _exception;
     }
-    LogMessage("libapt.cpp","WriteRead()","Attempt "+std::to_string(tries)+" of "+std::to_string(APT_MAX_TIRES));
+    LogMessage("libapt.cpp","Try_Write_Read()","Attempt "+std::to_string(tries)+" of "+std::to_string(APT_MAX_TIRES));
   }
   return replyData;
 }
 
 
-const std::vector<char> aptserial::APTDevice::WriteRead(const uint16_t _messageId, const uint16_t _expect, const uint8_t _destination, const char* _ptrData, const uint16_t _dataLength, const uint8_t _expectLength) {
+const std::vector<char> aptserial::APTDevice::Try_Write_Read(const uint16_t _messageId, const uint16_t _expectMessageId, const uint8_t _destination, const char* _ptrData, const uint16_t _dataLength, const uint8_t _expectLength) {
   uint tries = 0;
   std::vector<char> replyData;
   while(true) {
     try {
       size_t writeLength = Write(_messageId,_destination,_ptrData,_dataLength);
       usleep(APT_SLEEP_US);
-      size_t expectReplyLength = (_expectLength==0)?writeLength:_expectLength;
-      replyData = Read(_expect,expectReplyLength);
+      size_t expectReplyLength = (_expectLength==0)?writeLength:_expectLength; // TODO: make _expectLength required, and avoid this
+      replyData = Read(_expectMessageId,expectReplyLength);
       usleep(APT_SLEEP_US);
 
-      LogMessage("libapt.cpp","WriteRead()","writeLength = "+std::to_string(writeLength)+", replyData = "+std::to_string(replyData.size())+", expectReplyLength = "+std::to_string(expectReplyLength));
+      LogMessage("libapt.cpp","Try_Write_Read()","writeLength = "+std::to_string(writeLength)+", replyData = "+std::to_string(replyData.size())+", expectReplyLength = "+std::to_string(expectReplyLength));
 
       if (replyData.size()==expectReplyLength)
         break;
@@ -339,14 +339,56 @@ const std::vector<char> aptserial::APTDevice::WriteRead(const uint16_t _messageI
       if (++tries == APT_MAX_TIRES)
         throw _exception;
     }
-    LogMessage("libapt.cpp","WriteRead()","Attempt "+std::to_string(tries)+" of "+std::to_string(APT_MAX_TIRES));
+    LogMessage("libapt.cpp","Try_Write_Read()","Attempt "+std::to_string(tries)+" of "+std::to_string(APT_MAX_TIRES));
   }
   return replyData;
 }
 
+const std::vector<char> aptserial::APTDevice::Write_Try_Read(const uint16_t _messageId, const uint16_t _expectMessageId, const uint8_t _destination, const uint8_t _expectLength, const uint8_t _param1, const uint8_t _param2) {
+  uint tries = 0;
+  std::vector<char> replyData;
+  size_t writeLength = Write(_messageId,_destination,_param1,_param2); // assume write never fails
+  usleep(APT_SLEEP_US);
+  LogMessage("libapt.cpp","Write_Try_Read()","writeLength = "+std::to_string(writeLength));
+  while(true) {
+    try {
+      replyData = Read(_expectMessageId, _expectLength);
+      usleep(APT_SLEEP_US);
+      LogMessage("libapt.cpp","Write_Try_Read()","replyData = "+std::to_string(replyData.size())+", expectReplyLength = "+std::to_string(_expectLength));
+      if (replyData.size()==_expectLength)
+        break;
+    } catch (const aptserial::IncorrectHeaderException& _exception) {
+      if (++tries == APT_MAX_TIRES)
+        throw _exception;
+    }
+    LogMessage("libapt.cpp","Write_Try_Read()","Attempt "+std::to_string(tries)+" of "+std::to_string(APT_MAX_TIRES));
+  }
+  return replyData;
+}
+
+const std::vector<char> aptserial::APTDevice::Write_Try_Read(const uint16_t _messageId, const uint16_t _expectMessageId, const uint8_t _destination, const char* _ptrData, const uint16_t _dataLength, const uint8_t _expectLength) {
+  uint tries = 0;
+  std::vector<char> replyData;
+  size_t writeLength = Write(_messageId,_destination,_ptrData,_dataLength); // assume write never fails
+  usleep(APT_SLEEP_US);
+  LogMessage("libapt.cpp","Write_Try_Read()","writeLength = "+std::to_string(writeLength));
+  while(true) {
+    try {
+      replyData = Read(_expectMessageId,_expectLength);
+      usleep(APT_SLEEP_US);
+      LogMessage("libapt.cpp","Write_Try_Read()","replyData = "+std::to_string(replyData.size())+", expectReplyLength = "+std::to_string(_expectLength) + ", attempt "+std::to_string(tries)+" of "+std::to_string(APT_MAX_TIRES));
+      if (replyData.size()==_expectLength)
+        break;
+    } catch (const aptserial::IncorrectHeaderException& _exception) {
+      if (++tries == APT_MAX_TIRES)
+        throw _exception;
+    }
+  }
+  return replyData;
+}
 
 void aptserial::APTDevice::updateHWInfo() {
-  std::vector<char> replyData = WriteRead(APT_MGMSG_HW_REQ_INFO, APT_MGMSG_HW_GET_INFO, m_idSrcDest, sizeof(uHeader)+sizeof(stHWInfo));
+  std::vector<char> replyData = Try_Write_Read(APT_MGMSG_HW_REQ_INFO, APT_MGMSG_HW_GET_INFO, m_idSrcDest, sizeof(uHeader)+sizeof(stHWInfo));
 
   if (replyData.size() == 0)
     throw SerialPortException("libapt.cpp", "updateHWInfo()", "Reply not received");
@@ -411,7 +453,7 @@ void aptserial::APTDevice::setDisplaySettings(const uint16_t _brightness_adu) {
 
 
 void aptserial::APTDevice::getDisplaySettings(uint16_t& _brightness_adu) {
-  std::vector<char> replyData = WriteRead(APT_MGMSG_PZ_REQ_TPZ_DISPSETTINGS, APT_MGMSG_PZ_GET_TPZ_DISPSETTINGS, m_idSrcDest, sizeof(uHeader)+2);
+  std::vector<char> replyData = Try_Write_Read(APT_MGMSG_PZ_REQ_TPZ_DISPSETTINGS, APT_MGMSG_PZ_GET_TPZ_DISPSETTINGS, m_idSrcDest, sizeof(uHeader)+2);
 
   if (replyData.size() == 0)
     throw SerialPortException("libapt.cpp", "getDisplaySettings()", "Reply not received");
@@ -433,7 +475,7 @@ void aptserial::APTDevice::setChannelEnableState(const APT_STATE _state, const A
 
 
 void aptserial::APTDevice::getChannelEnableState(APT_STATE& _state, const APT_CHANNEL _channelId) {
-  std::vector<char> replyData = WriteRead(APT_MGMSG_PZ_REQ_PZSTATUSUPDATE, APT_MGMSG_PZ_GET_PZSTATUSUPDATE, m_idSrcDest, sizeof(uHeader)+sizeof(stStatus));
+  std::vector<char> replyData = Try_Write_Read(APT_MGMSG_PZ_REQ_PZSTATUSUPDATE, APT_MGMSG_PZ_GET_PZSTATUSUPDATE, m_idSrcDest, sizeof(uHeader)+sizeof(stStatus));
 
   if (replyData.size() == 0)
     throw SerialPortException("libapt.cpp", "getChannelEnableState()", "Reply not received");

@@ -5,6 +5,8 @@
 
 #include "libapt.h"
 
+// KPZ101 - PREFIX : PZ
+
 typedef APT_STATE PZ_STATE;
 #define PZ_STATE_LABELS APT_STATE_LABELS
 
@@ -70,6 +72,7 @@ namespace aptserial {
 
   const std::string positionControlModeToString(const PZ_POSITION_CONTROL_MODE _positionCtrlMode);
   const bool stringToPositionControlMode(const std::string _positionCtrlModeString, PZ_POSITION_CONTROL_MODE& _positionCtrlMode);
+  // ==================================================================================================================
 
   class KPZ101 : public APTDevice { // Piezo Controller
     struct stChannelValue { // page 174
