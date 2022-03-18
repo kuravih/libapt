@@ -32,6 +32,8 @@ aptserial::KST101::KST101(const std::string _deviceFileName) : APTDevice(_device
   setVelocityParameters(0, 136533*100, 136533*200); // set to default parameters
   updateVelocityParameters();
   updatePositionCounter();
+  setMovementParameters(0);
+  updateMovementParameters();
 }
 
 
@@ -84,7 +86,42 @@ void aptserial::KST101::updateVelocityParameters() {
 
 
 
-void aptserial::KST101::setPositionCounter(const uint32_t _position_tick) {
+void aptserial::KST101::setMovementParameters(const uint32_t _backlash) {
+  stChannelValue channelValue;
+  channelValue.channel = (uint16_t)APT_CHANNEL::CHANNEL_1;
+  channelValue.value = _backlash;
+  Write(APT_MGMSG_MOT_SET_GENMOVEPARAMS, m_idSrcDest, (char*)&channelValue, sizeof(channelValue));
+  updateMovementParameters();
+}
+
+void aptserial::KST101::getMovementParameters(uint32_t& _backlash) {
+  std::vector<char> replyData = Try_Write_Read(APT_MGMSG_MOT_REQ_GENMOVEPARAMS, APT_MGMSG_MOT_GET_GENMOVEPARAMS, m_idSrcDest, sizeof(uHeader)+sizeof(stChannelValue));
+
+  if (replyData.size() == 0)
+    throw SerialPortException("kst101.cpp", "getMovementParameters()", "Reply not received");
+  else {
+    uHeader readHeader;
+    memcpy(readHeader.raw, replyData.data(), sizeof(uHeader));
+
+    if (readHeader.command.messageId != APT_MGMSG_MOT_GET_GENMOVEPARAMS)
+      throw IncorrectHeaderException("kst101.cpp", "getMovementParameters()");
+
+    stChannelValue channelValue;
+    memcpy(&channelValue, replyData.data()+sizeof(uHeader), sizeof(stChannelValue));
+
+    _backlash = channelValue.value;
+  }
+}
+
+void aptserial::KST101::updateMovementParameters() {
+  getMovementParameters(m_backlash);
+}
+
+
+
+
+
+void aptserial::KST101::setPositionCounter(const int32_t _position_tick) {
   stChannelValue channelValue;
   channelValue.channel = (uint16_t)APT_CHANNEL::CHANNEL_1;
   channelValue.value = _position_tick;
@@ -92,7 +129,7 @@ void aptserial::KST101::setPositionCounter(const uint32_t _position_tick) {
   updatePositionCounter();
 }
 
-void aptserial::KST101::getPositionCounter(uint32_t& _position_tick) {
+void aptserial::KST101::getPositionCounter(int32_t& _position_tick) {
   std::vector<char> replyData = Try_Write_Read(APT_MGMSG_MOT_REQ_POSCOUNTER, APT_MGMSG_MOT_GET_POSCOUNTER, m_idSrcDest, sizeof(uHeader)+sizeof(stChannelValue), (uint8_t)APT_CHANNEL::CHANNEL_1);
 
   if (replyData.size() == 0)

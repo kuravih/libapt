@@ -61,7 +61,8 @@ namespace aptserial {
     } __attribute__((packed));
   private:
     uint32_t m_minVelocity, m_acceleration, m_maxVelocity;
-    uint32_t m_position_tick;
+    int32_t m_position_tick;
+    uint32_t m_backlash;
     ST_STATE m_state;
   public:
     KST101(const std::string _deviceFileName);
@@ -90,15 +91,23 @@ namespace aptserial {
     }
 
 
-    void setPositionCounter(const uint32_t _position_tick);
+    void setMovementParameters(const uint32_t _backlash);
+    void getMovementParameters(uint32_t& _backlash);
+    void updateMovementParameters();
+    uint32_t getBacklash() {
+      return m_backlash;
+    }
+
+
+    void setPositionCounter(const int32_t _position_tick);
     void resetPositionCounter() {
       setPositionCounter(0);
     }
-    void getPositionCounter(uint32_t& _position_tick);
+    void getPositionCounter(int32_t& _position_tick);
     void updatePositionCounter();
 
 
-    uint32_t getPosition() {
+    int32_t getPosition() {
       return m_position_tick;
     }
     float getPosition_mm() {
